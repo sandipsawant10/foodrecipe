@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import InputForm from "./InputForm";
 import { set } from "mongoose";
 import { useEffect } from "react";
+import user from "../../../../backend/models/user";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   let token = localStorage.getItem("token");
@@ -36,7 +37,10 @@ export default function Navbar() {
             <NavLink to={!isLogin ? "/favRecipe" : "/"}>Favourites</NavLink>
           </li>
           <li onClick={checkLogin}>
-            <p className="login">{isLogin ? "Login" : "Logout"}</p>
+            <p className="login">
+              {isLogin ? "Login" : "Logout"}
+              {user?.email ? (`${user?.email}`) : ""}
+            </p>
           </li>
         </ul>
       </header>

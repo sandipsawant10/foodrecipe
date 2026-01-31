@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const recipeSchema = mongoose.Schema(
   {
     title: {
@@ -7,7 +8,7 @@ const recipeSchema = mongoose.Schema(
       required: true,
     },
     ingredients: {
-      type: String,
+      type: Array,
       required: true,
     },
     instructions: {
@@ -20,6 +21,10 @@ const recipeSchema = mongoose.Schema(
     coverImage: {
       type: String,
     },
+    createBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
   },
   { timestamps: true }
 );

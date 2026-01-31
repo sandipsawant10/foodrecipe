@@ -1,19 +1,29 @@
+import { useNavigate } from "react-router-dom";
 import foodRecipe from "../assets/food1.png";
 import RecipeItem from "../components/RecipeItem";
+import { useState } from "react";
+import InputForm from "../components/InputForm";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const addRecipe = () => {
+    let token = localStorage.getItem("token");
+    if (token) navigate("/addRecipe");
+    else {
+      setIsOpen(true);
+    }
+  };
   return (
     <>
       <section className="home">
         <div className="left">
           <h1>Food Recipe</h1>
           <h5>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-            Perspiciatis dicta atque maiores ipsum similique soluta quidem,
-            mollitia sequi, facere et assumenda nemo. Necessitatibus eum
-            expedita ipsa possimus mollitia dolorum ipsam.
+            It is a long established fact that a reader will be distracted by
+            the readable content of a page when looking at its layout.
           </h5>
-          <button>Share your recipe</button>
+          <button onClick={addRecipe}>Share your recipe</button>
         </div>
         <div className="right">
           <img src={foodRecipe} width="320px" height="320px" />
@@ -28,6 +38,12 @@ export default function Home() {
           ></path>
         </svg>
       </div>
+      {isOpen && (
+        <Modal onClose={() => setIsOpen(false)}>
+          {" "}
+          <InputForm setIsOpen={() => setIsOpen(false)} />
+        </Modal>
+      )}
       <div className="recipe">
         <RecipeItem />
       </div>
