@@ -29,22 +29,40 @@ const addRecipe = async (req, res) => {
     return res.status(400).json({ message: "Please fill all required fields" });
   }
 
-  const newRecipe = await Recipe.create({
-    title,
-    ingredients,
-    instructions,
-    time,
-    coverImage: req.file.filename,
-    createBy: req.user.id
-  });
-  return res.json(newRecipe);
+  if (!req.file) {
+    return res.status(400).json({ message: "Image is required" });
+  }
+
+  try {
+    const newRecipe = await Recipe.create({
+      title,
+      ingredients,
+      instructions,
+      time,
+      coverImage: req.file.filename,
+      createBy: req.user.id,
+    });
+    return res.json(newRecipe);
+  } catch (error) {
+    console.error("Error creating recipe:", error);
+    return res
+      .status(500)
+      .json({ message: "Error creating recipe", error: error.message });
+  }
 };
 const editRecipe = async (req, res) => {
   const { title, ingredients, instructions, time } = req.body;
   let recipe = await Recipe.findById(req.params.id);
   try {
     if (recipe) {
-      await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      let coverImage = req.file?.filename
+        ? req.file.filename
+        : recipe.coverImage;
+      await Recipe.findByIdAndUpdate(
+        req.params.id,
+        { ...req.body, coverImage },
+        { new: true },
+      );
       res.json({ title, ingredients, instructions, time });
     }
   } catch (error) {
@@ -52,8 +70,13 @@ const editRecipe = async (req, res) => {
   }
 };
 
-const deleteRecipe = (req, res) => {
-  res.json({ message: "delete recipe" });
+const deleteRecipe = async (req, res) => {
+  try {
+    await Recipe.deleteOne({ _id: req.params.id });
+    res.json({ status: "ok" });
+  } catch (error) {
+    return res.status(400).json({ message: "Error deleting recipe" });
+  }
 };
 
 module.exports = {

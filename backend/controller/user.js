@@ -38,8 +38,19 @@ const userLogin = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.json({ email: user.email });
+  try {
+    if (!req.params.id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ email: user.email });
+  } catch (error) {
+    console.error("Error getting user:", error);
+    return res.status(500).json({ message: "Error getting user" });
+  }
 };
 
 module.exports = { userSignUp, userLogin, getUser };
